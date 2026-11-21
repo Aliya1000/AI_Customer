@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | AI Customer Support Coaching</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-logo">AI</div>
+        <div class="brand-text">
+          <h2>SupportCoach AI</h2>
+          <span>Multi-Agent Coaching Suite</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Workspace</div>
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="session-config.html" class="nav-link">New Session Config</a>
+        <a href="live-console.html" class="nav-link">Live Support Console</a>
+        <div class="nav-section-label">Knowledge & Review</div>
+        <a href="knowledge-base.html" class="nav-link">Knowledge Base (RAG)</a>
+        <a href="session-history.html" class="nav-link">Session History</a>
+        <a href="coaching-report.html" class="nav-link">Coaching Reports</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="api-status-box">
+          <div class="api-status-row">
+            <span><span class="status-dot mock" id="apiStatusDot"></span><span id="apiModeLabel">Mock Data Mode</span></span>
+          </div>
+          <button class="btn-mode-toggle" id="toggleApiModeBtn" type="button">Switch to Live API</button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" id="sidebarToggle" type="button">☰</button>
+          <div>
+            <h1 class="page-title">Coaching Operations Dashboard</h1>
+            <p class="page-subtitle">Overview of support coaching sessions, CSAT metrics, and AI agent readiness</p>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <a href="session-config.html" class="btn btn-primary">+ Start New Session</a>
+        </div>
+      </header>
+
+      <div class="page-body">
+        <section class="kpi-grid">
+          <div class="kpi-card">
+            <span class="kpi-label">Total Conversations</span>
+            <span class="kpi-value" id="kpiTotal">—</span>
+            <span class="kpi-trend">Synced from SQL backend</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Active Sessions</span>
+            <span class="kpi-value" id="kpiActive">—</span>
+            <span class="kpi-trend">Live coaching in progress</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Completed Sessions</span>
+            <span class="kpi-value" id="kpiCompleted">—</span>
+            <span class="kpi-trend">Evaluated by Coaching Agent</span>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">Customer Satisfaction</span>
+            <span class="kpi-value" id="kpiCsat">91%</span>
+            <span class="kpi-trend">Avg quality & sentiment index</span>
+          </div>
+        </section>
+
+        <section class="dashboard-grid">
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Customer Satisfaction & Coaching Score Trend</h2>
+              <span class="badge badge-info">Last 7 Days</span>
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="satisfactionChart"></canvas>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">Quick Navigation</h2>
+            </div>
+            <div class="quick-nav-grid">
+              <a href="session-config.html" class="quick-nav-card">
+                <strong>Configure Session</strong>
+                <span>Simulator, Manual, or Replay</span>
+              </a>
+              <a href="live-console.html" class="quick-nav-card">
+                <strong>Live Console</strong>
+                <span>3-Panel AI Agent Coaching</span>
+              </a>
+              <a href="knowledge-base.html" class="quick-nav-card">
+                <strong>Knowledge Base</strong>
+                <span>Upload PDF, TXT, JSON for RAG</span>
+              </a>
+              <a href="coaching-report.html" class="quick-nav-card">
+                <strong>Coaching Reports</strong>
+                <span>Scores & improvement tips</span>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <h2 class="card-title">Recent Conversations</h2>
+            <a href="session-history.html" class="btn btn-secondary btn-sm">View All History</a>
+          </div>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Session ID</th>
+                  <th>Mode</th>
+                  <th>Product</th>
+                  <th>Customer Issue</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="recentSessionsBody">
+                <tr><td colspan="6">Loading sessions...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

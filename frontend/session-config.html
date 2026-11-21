@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Session Configuration | AI Customer Support Coaching</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-logo">AI</div>
+        <div class="brand-text">
+          <h2>SupportCoach AI</h2>
+          <span>Multi-Agent Coaching Suite</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Workspace</div>
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="session-config.html" class="nav-link">New Session Config</a>
+        <a href="live-console.html" class="nav-link">Live Support Console</a>
+        <div class="nav-section-label">Knowledge & Review</div>
+        <a href="knowledge-base.html" class="nav-link">Knowledge Base (RAG)</a>
+        <a href="session-history.html" class="nav-link">Session History</a>
+        <a href="coaching-report.html" class="nav-link">Coaching Reports</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="api-status-box">
+          <div class="api-status-row">
+            <span><span class="status-dot mock" id="apiStatusDot"></span><span id="apiModeLabel">Mock Data Mode</span></span>
+          </div>
+          <button class="btn-mode-toggle" id="toggleApiModeBtn" type="button">Switch to Live API</button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" id="sidebarToggle" type="button">☰</button>
+          <div>
+            <h1 class="page-title">Session Configuration</h1>
+            <p class="page-subtitle">Configure Simulator, Manual, or Replay coaching sessions</p>
+          </div>
+        </div>
+      </header>
+
+      <div class="page-body">
+        <div class="card" style="max-width: 920px;">
+          <div class="card-header">
+            <h2 class="card-title">Create New Support Coaching Session</h2>
+            <span class="badge badge-info">Saved via Python SQL API</span>
+          </div>
+
+          <form id="sessionConfigForm" novalidate>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="interactionMode">Interaction Mode <span class="required">*</span></label>
+                <select id="interactionMode" name="interaction_mode" required>
+                  <option value="simulator">Simulator Mode (AI Customer Persona)</option>
+                  <option value="manual">Manual Mode (Enter Customer Complaint)</option>
+                  <option value="replay">Replay Mode (Upload Transcript TXT/JSON)</option>
+                </select>
+                <span class="error-text" id="errMode"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="productName">Product Name <span class="required">*</span></label>
+                <input type="text" id="productName" list="productSuggestions" placeholder="e.g., AeroSound Pro ANC Headphones" required />
+                <datalist id="productSuggestions"></datalist>
+                <span class="error-text" id="errProduct"></span>
+              </div>
+
+              <div class="form-group full-width">
+                <label for="productContext">Product Context <span class="required">*</span></label>
+                <textarea id="productContext" rows="2" placeholder="Purchase date, warranty status, software version, or plan tier..." required></textarea>
+                <span class="error-text" id="errContext"></span>
+              </div>
+
+              <!-- Simulator Mode Specific Fields -->
+              <div class="form-group mode-panel" data-mode="simulator">
+                <label for="customerPersona">Customer Persona <span class="required">*</span></label>
+                <select id="customerPersona">
+                  <option value="Patient">Patient</option>
+                  <option value="Impatient">Impatient</option>
+                  <option value="Confused">Confused</option>
+                  <option value="Angry">Angry</option>
+                </select>
+              </div>
+
+              <div class="form-group mode-panel" data-mode="simulator">
+                <label for="emotionalProgression">Emotional Progression</label>
+                <select id="emotionalProgression">
+                  <option value="stable">Stable</option>
+                  <option value="escalating_to_calm">Escalating -> Calm with Empathy</option>
+                  <option value="calm_to_frustrated">Calm -> Frustrated if Delayed</option>
+                </select>
+              </div>
+
+              <div class="form-group full-width mode-panel" data-mode="simulator">
+                <label for="scenarioPreset">Scenario Selection</label>
+                <select id="scenarioPreset">
+                  <option value="">-- Select preset scenario or customize below --</option>
+                  <option value="Customer received headphones with a cracked left earcup and buzzing ANC.">Damaged Headphones on Arrival + ANC Defect</option>
+                  <option value="Smartwatch battery drains rapidly after firmware update.">Post-Update Battery Drain Issue</option>
+                  <option value="Customer was double-billed during subscription upgrade.">Duplicate Billing Charge Dispute</option>
+                </select>
+              </div>
+
+              <!-- Replay Mode Specific Fields -->
+              <div class="form-group full-width mode-panel hidden" data-mode="replay">
+                <label for="replayFile">Upload Conversation Transcript (.txt or .json) <span class="required">*</span></label>
+                <input type="file" id="replayFile" accept=".txt,.json" />
+                <span class="helper-text" id="replayFileInfo">Supports TXT or JSON transcripts up to 2MB.</span>
+                <span class="error-text" id="errReplay"></span>
+              </div>
+
+              <!-- Shared Scenario / Complaint Textarea -->
+              <div class="form-group full-width">
+                <label for="customerScenario" id="scenarioLabel">Customer Problem / Scenario <span class="required">*</span></label>
+                <textarea id="customerScenario" rows="4" placeholder="Describe the customer complaint or problem scenario..." required></textarea>
+                <span class="error-text" id="errScenario"></span>
+              </div>
+            </div>
+
+            <div style="display:flex; gap:12px; margin-top:16px; align-items:center; flex-wrap:wrap;">
+              <button type="submit" class="btn btn-primary" id="startSessionBtn">Start Session</button>
+              <button type="button" class="btn btn-secondary hidden" id="submitManualProblemBtn">Submit Customer Problem</button>
+              <span id="sessionLoading" class="hidden"><span class="spinner"></span> Creating session...</span>
+            </div>
+          </form>
+
+          <!-- Generated Session Confirmation -->
+          <div id="sessionCreatedBox" class="card hidden" style="margin-top:20px; background:#eff6ff; border-color:#bfdbfe;">
+            <h3 style="color:var(--navy-900); margin-bottom:6px;">Session Created Successfully</h3>
+            <p style="font-size:0.9rem; margin-bottom:12px;">
+              Generated Session ID: <strong id="generatedSessionId"></strong>
+            </p>
+            <a id="launchConsoleLink" href="live-console.html" class="btn btn-primary btn-sm">Launch Live Support Console</a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/session.js"></script>
+</body>
+</html>

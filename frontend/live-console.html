@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Live Support Console | AI Customer Support Coaching</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/console.css" />
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-logo">AI</div>
+        <div class="brand-text">
+          <h2>SupportCoach AI</h2>
+          <span>Multi-Agent Coaching Suite</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Workspace</div>
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="session-config.html" class="nav-link">New Session Config</a>
+        <a href="live-console.html" class="nav-link">Live Support Console</a>
+        <div class="nav-section-label">Knowledge & Review</div>
+        <a href="knowledge-base.html" class="nav-link">Knowledge Base (RAG)</a>
+        <a href="session-history.html" class="nav-link">Session History</a>
+        <a href="coaching-report.html" class="nav-link">Coaching Reports</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="api-status-box">
+          <div class="api-status-row">
+            <span><span class="status-dot mock" id="apiStatusDot"></span><span id="apiModeLabel">Mock Data Mode</span></span>
+          </div>
+          <button class="btn-mode-toggle" id="toggleApiModeBtn" type="button">Switch to Live API</button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" id="sidebarToggle" type="button">☰</button>
+          <div>
+            <h1 class="page-title">Live Support Console</h1>
+            <p class="page-subtitle">Real-time customer conversation with 6-Agent Hybrid Coaching</p>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <select id="sessionSelector" style="width:220px;" aria-label="Select active session"></select>
+          <a id="viewReportLink" href="coaching-report.html" class="btn btn-secondary btn-sm">View Report</a>
+        </div>
+      </header>
+
+      <div class="page-body">
+        <div class="console-banner">
+          <div class="console-banner-meta">
+            <span>Session: <strong id="bannerSessionId">—</strong></span>
+            <span>Mode: <strong id="bannerMode">—</strong></span>
+            <span>Product: <strong id="bannerProduct">—</strong></span>
+            <span>Persona: <strong id="bannerPersona">—</strong></span>
+          </div>
+          <span class="badge badge-info" id="agentPipelineBadge">Supervisor Ready</span>
+        </div>
+
+        <div id="agentLoadingIndicator" class="loading-banner hidden" style="margin-bottom:12px;">
+          <span class="spinner"></span>
+          <span>Supervisor Agent coordinating Query Analysis, RAG Retrieval, Product Info, Response & Evaluation Agents...</span>
+        </div>
+
+        <div class="console-grid">
+          <!-- LEFT PANEL: Customer Conversation -->
+          <section class="console-panel">
+            <div class="panel-header">
+              <h3>Customer Conversation</h3>
+              <span class="badge badge-neutral" id="msgCountBadge">0 msgs</span>
+            </div>
+            <div class="chat-messages" id="chatMessages"></div>
+            <form class="chat-composer" id="chatForm">
+              <textarea id="employeeMessageInput" placeholder="Type your support reply to the customer..." required></textarea>
+              <div class="composer-actions">
+                <select id="senderRoleSelect" style="width:150px; padding:6px 8px; font-size:0.8rem;">
+                  <option value="employee">As Employee</option>
+                  <option value="customer">As Customer (Manual)</option>
+                </select>
+                <button type="submit" class="btn btn-primary btn-sm" id="sendMsgBtn">Send Message</button>
+              </div>
+            </form>
+          </section>
+
+          <!-- MIDDLE PANEL: AI Coaching (6 Agents) -->
+          <section class="console-panel">
+            <div class="panel-header">
+              <h3>AI Coaching (6 Agents)</h3>
+              <span class="badge badge-warning" id="mockLabelBadge">Hybrid Orchestration</span>
+            </div>
+            <div class="panel-body">
+              <!-- 1. Supervisor Agent -->
+              <div class="agent-card">
+                <div class="agent-card-header">
+                  <span class="agent-title">1. Supervisor Agent</span>
+                  <span class="badge badge-success" id="supStatus">Idle</span>
+                </div>
+                <div class="agent-content" id="supPattern">Waiting for conversation turn...</div>
+              </div>
+
+              <!-- 2. Query Analysis Agent -->
+              <div class="agent-card">
+                <div class="agent-card-header">
+                  <span class="agent-title">2. Query Analysis Agent</span>
+                </div>
+                <div class="agent-content">
+                  <div class="agent-kv"><span>Intent:</span><strong id="qaIntent">—</strong></div>
+                  <div class="agent-kv"><span>Sentiment:</span><strong id="qaSentiment">—</strong></div>
+                  <p id="qaSummary" style="margin-top:6px;">—</p>
+                </div>
+              </div>
+
+              <!-- 3. Knowledge Retrieval Agent -->
+              <div class="agent-card">
+                <div class="agent-card-header">
+                  <span class="agent-title">3. Knowledge Retrieval Agent (RAG)</span>
+                </div>
+                <div class="agent-content" id="krSummary">—</div>
+              </div>
+
+              <!-- 4. Product Information Agent -->
+              <div class="agent-card">
+                <div class="agent-card-header">
+                  <span class="agent-title">4. Product Information Agent</span>
+                </div>
+                <div class="agent-content" id="piSummary">—</div>
+              </div>
+
+              <!-- 5. Response Generation Agent -->
+              <div class="agent-card">
+                <div class="agent-card-header">
+                  <span class="agent-title">5. Response Generation Agent</span>
+                  <button type="button" class="btn btn-secondary btn-sm" id="useSuggestedBtn">Use Suggested</button>
+                </div>
+                <div class="suggested-box" id="rgSuggested">Suggested reply will appear here...</div>
+              </div>
+
+              <!-- 6. Evaluation & Coaching Agent -->
+              <div class="agent-card">
+                <div class="agent-card-header">
+                  <span class="agent-title">6. Evaluation & Coaching Agent</span>
+                  <span class="score-pill" id="ecScore">—/100</span>
+                </div>
+                <ul class="step-list" id="ecTips">
+                  <li>Send a message to receive coaching evaluation.</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <!-- RIGHT PANEL: Knowledge & Product Information -->
+          <section class="console-panel">
+            <div class="panel-header">
+              <h3>Knowledge & Product Info</h3>
+              <span class="badge badge-info">RAG Context</span>
+            </div>
+            <div class="panel-body">
+              <div>
+                <h4 style="font-size:0.84rem; margin-bottom:6px;">Product Details</h4>
+                <div class="kb-item" id="rightProductBox">—</div>
+              </div>
+              <div>
+                <h4 style="font-size:0.84rem; margin-bottom:6px;">Retrieved KB Articles & Sources</h4>
+                <div id="rightArticlesList" style="display:flex; flex-direction:column; gap:8px;">—</div>
+              </div>
+              <div>
+                <h4 style="font-size:0.84rem; margin-bottom:6px;">Troubleshooting Steps</h4>
+                <ol class="step-list" id="rightTroubleshootingList"></ol>
+              </div>
+              <div>
+                <h4 style="font-size:0.84rem; margin-bottom:6px;">Relevant FAQs</h4>
+                <div id="rightFaqList" style="display:flex; flex-direction:column; gap:8px;"></div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/console.js"></script>
+</body>
+</html>

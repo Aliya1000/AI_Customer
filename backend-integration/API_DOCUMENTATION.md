@@ -1,0 +1,172 @@
+# Backend REST API Contract
+
+**Default Base URL:** `http://localhost:8000`  
+**Content-Type:** `application/json` (except file upload which uses `multipart/form-data`).  
+**CORS:** Backend must enable CORS for the frontend origin (`http://localhost:5500`).
+
+---
+
+## 1. Sessions
+
+### `POST /api/sessions`
+Creates a new coaching session in SQL and initializes the Supervisor Agent.
+
+**Request Body:**
+```json
+{
+  "interaction_mode": "simulator",
+  "product_name": "AeroSound Pro ANC Headphones",
+  "product_context": "Purchased 2 months ago, under 1-year warranty.",
+  "customer_scenario": "Left earcup cracked on arrival and ANC buzzes.",
+  "persona": "Angry",
+  "emotional_progression": "escalating_to_calm",
+  "replay_transcript": null
+}
+```
+
+**Response (`201 Created`):**
+```json
+{
+  "session_id": "SES-2026-0042",
+  "interaction_mode": "simulator",
+  "product_name": "AeroSound Pro ANC Headphones",
+  "product_context": "Purchased 2 months ago, under 1-year warranty.",
+  "customer_scenario": "Left earcup cracked on arrival and ANC buzzes.",
+  "persona": "Angry",
+  "status": "active",
+  "created_at": "2026-11-21T14:30:00Z"
+}
+```
+
+### `GET /api/sessions`
+Returns all sessions ordered by `created_at DESC`.
+
+### `GET /api/sessions/{id}`
+Returns session metadata + latest AI agent snapshot (if available).
+
+---
+
+## 2. Messages & Hybrid AI Agent Pipeline
+
+### `POST /api/sessions/{id}/messages`
+Saves a message (`employee` or `customer`), triggers the **Supervisor Agent** (running Query Analysis, Knowledge Retrieval, Product Info, Response Generation, and Evaluation & Coaching), and returns the saved message along with all 6 agent outputs.
+
+**Request Body:**
+```json
+{
+  "sender": "employee",
+  "message_text": "I sincerely apologize for the damaged headphones. Let me verify your warranty and arrange an immediate replacement."
+}
+```
+
+**Response (`200 OK`):**
+```json
+{
+  "saved_message": {
+    "message_id": "MSG-101",
+    "session_id": "SES-2026-0042",
+    "sender": "employee",
+    "message_text": "I sincerely apologize...",
+    "timestamp": "2026-11-21T14:35:00Z"
+  },
+  "simulated_customer_reply": {
+    "message_id": "MSG-102",
+    "session_id": "SES-2026-0042",
+    "sender": "customer",
+    "message_text": "Thank you, how long will the replacement take?",
+    "timestamp": "2026-11-21T14:35:04Z"
+  },
+  "agent_outputs": {
+    "supervisor": {
+      "status": "Completed",
+      "active_pattern": "Hybrid (Supervisor -> Parallel [Query + RAG + Product] -> Sequential [Response -> Evaluation])",
+      "agents_completed": 6
+    },
+    "query_analysis": {
+      "summary": "Customer received physically damaged hardware with ANC defect.",
+      "intent": "Warranty Replacement Request",
+      "sentiment": "Frustrated (De-escalating)"
+    },
+    "knowledge_retrieval": {
+      "summary": "Retrieved Damaged-on-Arrival (DOA) Return Policy & ANC Troubleshooting.",
+      "articles": [
+        {
+          "title": "DOA Hardware Replacement Policy",
+          "source": "warranty_guidelines_v3.pdf",
+          "relevance_score": 0.96,
+          "snippet": "Items damaged in transit qualify for express 48-hour replacement."
+        }
+      ],
+      "faqs": [
+        { "question": "Does warranty cover transit damage?", "answer": "Yes, within 30 days with photo verification." }
+      ],
+      "troubleshooting_steps": [
+        "Confirm order ID and photo of crack",
+        "Issue prepaid RMA return label",
+        "Dispatch express replacement unit"
+      ]
+    },
+    "product_information": {
+      "product_name": "AeroSound Pro ANC Headphones",
+      "product_category": "Audio / Wireless Headphones",
+      "product_description": "Flagship Bluetooth 5.3 ANC headphones with 1-year hardware warranty.",
+      "warranty_status": "Eligible for Express DOA Replacement"
+    },
+    "response_generation": {
+      "suggested_response": "Your express replacement ships within 24 hours once we receive a photo of the earcup, and arrives in 2 business days at no cost."
+    },
+    "evaluation_and_coaching": {
+      "evaluation_score": 88,
+      "tips": [
+        "Great empathy in the opening sentence.",
+        "Include expected shipping timeline to reduce follow-up anxiety."
+      ]
+    }
+  }
+}
+```
+
+### `GET /api/sessions/{id}/messages`
+Returns chronological list of messages for `session_id`.
+
+---
+
+## 3. Knowledge Base (RAG Pipeline)
+
+### `POST /api/knowledge/upload`
+- **Content-Type:** `multipart/form-data`
+- **Form Field:** `file` (`.pdf`, `.txt`, or `.json`)
+- **Response (`201 Created`):** `KnowledgeDocument` object (`document_id`, `filename`, `file_type`, `upload_time`, `processing_status`).
+
+### `GET /api/knowledge/documents`
+Returns array of `KnowledgeDocument` records.
+
+### `DELETE /api/knowledge/documents/{id}`
+Deletes document metadata from SQL and removes associated vector chunks. Returns `200 OK` `{ "deleted": true, "document_id": "..." }`.
+
+---
+
+## 4. Coaching Reports
+
+### `GET /api/sessions/{id}/coaching-report`
+Returns final evaluation generated by the Evaluation & Coaching Agent.
+
+**Response (`200 OK`):**
+```json
+{
+  "report_id": "REP-0042",
+  "session_id": "SES-2026-0042",
+  "conversation_summary": "Customer reported cracked earcup and ANC buzzing. Agent verified warranty and initiated RMA.",
+  "customer_sentiment": "Initially Angry -> Resolved / Satisfied",
+  "evaluation_score": 89,
+  "employee_evaluation": "Empathetic, accurate policy application, clear resolution path.",
+  "strengths": ["Immediate empathy", "Accurate DOA policy citation"],
+  "areas_for_improvement": ["Mention prepaid shipping label earlier"],
+  "recommendations": [
+    "Always state exact SLA timeframes in the first resolution reply."
+  ],
+  "recommended_replies": [
+    "I'm very sorry your AeroSound Pro arrived damaged. Because this is covered under our DOA policy, I've generated a prepaid return label and can ship a replacement within 24 hours."
+  ]
+}
+```

@@ -1,0 +1,231 @@
+.console-banner {
+  background: var(--navy-800);
+  color: #ffffff;
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
+  margin-bottom: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.console-banner-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.85rem;
+}
+
+.console-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1.1fr 0.95fr;
+  gap: 16px;
+  height: calc(100vh - 205px);
+  min-height: 560px;
+}
+
+.console-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.panel-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-color);
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.panel-header h3 {
+  font-size: 0.94rem;
+  font-weight: 700;
+  color: var(--navy-900);
+}
+
+.panel-body {
+  padding: 14px 16px;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Left Panel: Chat */
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #f8fafc;
+}
+
+.msg-bubble {
+  max-width: 86%;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.msg-customer {
+  align-self: flex-start;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+}
+
+.msg-employee {
+  align-self: flex-end;
+  background: var(--navy-800);
+  color: #ffffff;
+}
+
+.msg-meta {
+  font-size: 0.72rem;
+  opacity: 0.75;
+  margin-top: 4px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.chat-composer {
+  border-top: 1px solid var(--border-color);
+  padding: 12px;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chat-composer textarea {
+  resize: none;
+  min-height: 68px;
+}
+
+.composer-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Middle Panel: 6 AI Agents */
+.agent-card {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  background: #ffffff;
+}
+
+.agent-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  gap: 8px;
+}
+
+.agent-title {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--navy-800);
+}
+
+.agent-content {
+  font-size: 0.83rem;
+  color: var(--text-secondary);
+}
+
+.agent-kv {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px dashed var(--border-color);
+}
+
+.agent-kv:last-child { border-bottom: none; }
+
+.suggested-box {
+  background: var(--blue-50);
+  border: 1px solid #bfdbfe;
+  border-radius: var(--radius-sm);
+  padding: 10px;
+  font-size: 0.84rem;
+  color: var(--navy-900);
+  margin-bottom: 8px;
+}
+
+.score-pill {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--blue-600);
+}
+
+/* Right Panel: RAG & Product */
+.kb-item {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  background: #f8fafc;
+}
+
+.kb-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.kb-item-title {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--navy-900);
+}
+
+.kb-snippet {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.step-list {
+  padding-left: 18px;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.loading-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--blue-50);
+  color: var(--navy-800);
+  border-radius: var(--radius-sm);
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+@media (max-width: 1200px) {
+  .console-grid {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  .console-panel {
+    min-height: 440px;
+  }
+}

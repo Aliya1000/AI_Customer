@@ -1,0 +1,22 @@
+# Environment & Secrets
+.env
+.env.local
+
+# Python Backend (for teammates)
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+*.sqlite3
+*.db
+
+# Node / Frontend Tooling
+node_modules/
+dist/
+
+# Logs & OS Files
+*.log
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
