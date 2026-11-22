@@ -1,14 +1,35 @@
 # Environment & Secrets
 .env
 .env.local
+.env.*
+!.env.example
 
-# Python Backend (for teammates)
+# Python & Virtual Environments
 __pycache__/
 *.py[cod]
+*$py.class
+*.so
 venv/
 .venv/
+env/
+ENV/
+
+# Pytest & Test Caches
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Databases
 *.sqlite3
 *.db
+
+# Model weights & large data
+default_bm25_params.json
+bm25_params.json
+*/data/default_bm25_params.json
+*/data/bm25_params.json
 
 # Node / Frontend Tooling
 node_modules/
@@ -16,6 +37,7 @@ dist/
 
 # Logs & OS Files
 *.log
+logs/
 .DS_Store
 Thumbs.db
 .vscode/
