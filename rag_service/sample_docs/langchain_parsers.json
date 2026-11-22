@@ -1,0 +1,17 @@
+[
+  {
+    "title": "LangChain Document Loaders and Parsers",
+    "content": "LangChain provides specialized document loaders and parsers for various file formats including PyPDFLoader for Adobe Acrobat PDF files, TextLoader for raw text and Markdown, and CSVLoader for structured tabular data. Loaders parse documents into standard Document objects containing page_content and metadata.",
+    "category": "ingestion"
+  },
+  {
+    "title": "LangChain Output Parsers",
+    "content": "LangChain output parsers take the raw string completion from a large language model and transform it into structured, validated data structures. The PydanticOutputParser leverages Pydantic models to enforce strict schema validation, type checking, field constraints, and automatic JSON deserialization. It also provides format instructions that guide LLMs to emit compliant JSON syntax.",
+    "category": "generation"
+  },
+  {
+    "title": "RecursiveCharacterTextSplitter",
+    "content": "RecursiveCharacterTextSplitter recursively splits text using a list of delimiters like double newlines, single newlines, and spaces to preserve semantic paragraphs and sentences while keeping chunks within max token/character boundaries.",
+    "category": "preprocessing"
+  }
+]

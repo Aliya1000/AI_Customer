@@ -1,0 +1,14 @@
+Pinecone Vector Database Architecture and Hybrid Indexing
+
+Pinecone Serverless separates storage and compute, allowing vector workloads to scale cost-effectively.
+When building a hybrid index in Pinecone, each record contains:
+1. Record ID: Unique identifier for each document chunk (e.g., doc_001_chunk_4).
+2. Dense Vector: A floating point array representing semantic embeddings, typically 1536 dimensions for OpenAI text-embedding-3 models.
+3. Sparse Vector: A dictionary containing 'indices' (token or subword IDs) and 'values' (BM25 or SPLADE weights).
+4. Metadata: Arbitrary JSON payload containing raw document text, filename, page numbers, timestamps, and section headers.
+
+Batching Upserts:
+Pinecone recommends batching upsert operations in groups of 100 to 200 records to maximize network throughput and stay well below payload limits.
+
+Querying:
+Hybrid queries pass both the dense vector and sparse vector simultaneously. Pinecone calculates the dot product for both spaces and merges the results in a single sub-millisecond round trip.
