@@ -18,20 +18,20 @@
       </div>
       <nav class="sidebar-nav">
         <div class="nav-section-label">Workspace</div>
-        <a href="dashboard.html" class="nav-link">Dashboard</a>
-        <a href="session-config.html" class="nav-link">New Session Config</a>
-        <a href="live-console.html" class="nav-link">Live Support Console</a>
+        <a href="dashboard" class="nav-link">Dashboard</a>
+        <a href="session-config" class="nav-link">New Session Config</a>
+        <a href="live-console" class="nav-link">Live Support Console</a>
         <div class="nav-section-label">Knowledge & Review</div>
-        <a href="knowledge-base.html" class="nav-link">Knowledge Base (RAG)</a>
-        <a href="session-history.html" class="nav-link">Session History</a>
-        <a href="coaching-report.html" class="nav-link">Coaching Reports</a>
+        <a href="knowledge-base" class="nav-link">Knowledge Base (RAG)</a>
+        <a href="session-history" class="nav-link">Session History</a>
+        <a href="coaching-report" class="nav-link">Coaching Reports</a>
       </nav>
       <div class="sidebar-footer">
         <div class="api-status-box">
           <div class="api-status-row">
-            <span><span class="status-dot mock" id="apiStatusDot"></span><span id="apiModeLabel">Mock Data Mode</span></span>
+            <span><span class="status-dot live" id="apiStatusDot"></span><span id="apiModeLabel">Live API</span></span>
           </div>
-          <button class="btn-mode-toggle" id="toggleApiModeBtn" type="button">Switch to Live API</button>
+          <button class="btn-mode-toggle" id="toggleApiModeBtn" type="button">Change API URL</button>
         </div>
       </div>
     </aside>
@@ -112,8 +112,8 @@
     </main>
   </div>
 
-  <script src="js/api.js"></script>
-  <script src="js/main.js"></script>
-  <script src="js/report.js"></script>
+  <script src="js/api.js?v=3.0"></script>
+  <script src="js/main.js?v=3.0"></script>
+  <script src="js/report.js?v=3.0"></script>
 </body>
 </html>

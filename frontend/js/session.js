@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const created = await window.ApiService.createSession(payload);
 
       document.getElementById('generatedSessionId').textContent = created.session_id;
-      document.getElementById('launchConsoleLink').href = `live-console.html?session_id=${encodeURIComponent(created.session_id)}`;
+      document.getElementById('launchConsoleLink').href = `live-console?session_id=${encodeURIComponent(created.session_id)}`;
       document.getElementById('sessionCreatedBox').classList.remove('hidden');
       showToast(`Session ${created.session_id} created!`, 'success');
     } catch (err) {

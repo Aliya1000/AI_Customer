@@ -6,10 +6,10 @@ from dotenv import load_dotenv
 # Base directory for the self-contained RAG service
 _PKG_DIR = Path(__file__).resolve().parent
 
-# Load environment variables: check current dir, package dir, or workspace root
+# Load environment variables: check package dir, current dir, or workspace root
 _env_candidates = [
-    Path.cwd() / ".env",
     _PKG_DIR / ".env",
+    Path.cwd() / ".env",
     _PKG_DIR.parent / ".env",
 ]
 for _env_path in _env_candidates:
@@ -22,6 +22,14 @@ else:
 
 @dataclass
 class Settings:
+    # Service Network & Communication Configuration
+    environment: str = os.getenv("ENVIRONMENT", "production")
+    port: int = int(os.getenv("PORT", "8001"))
+    host: str = os.getenv("HOST", "0.0.0.0")
+    backend_url: str = os.getenv("BACKEND_URL", "http://localhost:8000")
+    rag_internal_secret: str = os.getenv("RAG_INTERNAL_SECRET", "rag-backend-secret-key-2026")
+    verify_sessions_with_backend: bool = os.getenv("VERIFY_SESSIONS_WITH_BACKEND", "true").lower() in ("1", "true", "yes")
+
     # Directory paths
     base_dir: Path = _PKG_DIR
     data_dir: Path = _PKG_DIR / "data"

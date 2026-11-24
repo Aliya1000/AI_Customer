@@ -8,6 +8,7 @@ Handles:
 4. Upserting hybrid records with metadata into Pinecone (or in-memory mock store).
 """
 
+import logging
 import math
 from typing import List, Optional, Any, Dict
 from pinecone import Pinecone, ServerlessSpec
@@ -18,6 +19,8 @@ from ..config import settings
 from ..retrieval.bm25_sparse import BM25SparseEncoder
 from ..retrieval.hybrid_retriever import InMemoryVectorStore
 from ..retrieval.embeddings import get_dense_embedder
+
+logger = logging.getLogger(__name__)
 
 
 class PineconeHybridIndexer:
@@ -55,25 +58,32 @@ class PineconeHybridIndexer:
 
     def _init_pinecone(self) -> None:
         """Initializes Pinecone client and creates index if it does not exist."""
-        self.pinecone_client = Pinecone(api_key=self.api_key)
+        try:
+            self.pinecone_client = Pinecone(api_key=self.api_key)
 
-        # Check existing indexes
-        existing_indexes = [idx["name"] for idx in self.pinecone_client.list_indexes()]
+            # Check existing indexes
+            existing_indexes = [idx["name"] for idx in self.pinecone_client.list_indexes()]
 
-        if self.index_name not in existing_indexes:
-            print(f"Creating Pinecone index '{self.index_name}' with metric='dotproduct'...")
-            # Note: dotproduct metric is required for hybrid search to correctly combine dense and sparse scores
-            self.pinecone_client.create_index(
-                name=self.index_name,
-                dimension=settings.embedding_dimension,
-                metric="dotproduct",
-                spec=ServerlessSpec(
-                    cloud=settings.pinecone_cloud,
-                    region=settings.pinecone_region,
-                ),
-            )
+            if self.index_name not in existing_indexes:
+                logger.info(f"Creating Pinecone index '{self.index_name}' with metric='dotproduct'...")
+                # Note: dotproduct metric is required for hybrid search to correctly combine dense and sparse scores
+                self.pinecone_client.create_index(
+                    name=self.index_name,
+                    dimension=settings.embedding_dimension,
+                    metric="dotproduct",
+                    spec=ServerlessSpec(
+                        cloud=settings.pinecone_cloud,
+                        region=settings.pinecone_region,
+                    ),
+                )
 
-        self.index = self.pinecone_client.Index(self.index_name)
+            self.index = self.pinecone_client.Index(self.index_name)
+        except Exception as e:
+            logger.warning(f"Could not connect to Pinecone ({e}); switching to local vector store.")
+            self.mock_mode = True
+            if self.mock_store is None:
+                self.mock_store = InMemoryVectorStore()
+            self.index = None
 
     def _get_dense_embeddings(self, texts: List[str]) -> List[List[float]]:
         """Computes dense embeddings for a batch of text chunks."""

@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
   const { escapeHTML, showToast } = window.UIUtils;
 
-  function drawSatisfactionChart() {
+  function drawSatisfactionChart(trendPoints) {
     const canvas = document.getElementById('satisfactionChart');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -12,8 +12,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const w = rect.width;
     const h = rect.height;
-    const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    const values = [82, 85, 84, 88, 90, 91, 93];
     const pad = { top: 20, right: 20, bottom: 32, left: 38 };
     const chartW = w - pad.left - pad.right;
     const chartH = h - pad.top - pad.bottom;
@@ -33,9 +31,21 @@ document.addEventListener('DOMContentLoaded', async () => {
       ctx.fillText(`${val}%`, 4, y + 4);
     });
 
+    if (!trendPoints || trendPoints.length === 0) {
+      ctx.font = '13px sans-serif';
+      ctx.fillStyle = '#94a3b8';
+      ctx.textAlign = 'center';
+      ctx.fillText('No conversation data recorded yet', w / 2, h / 2);
+      ctx.textAlign = 'left';
+      return;
+    }
+
+    const labels = trendPoints.map(p => p.day || p.date || '');
+    const values = trendPoints.map(p => p.satisfaction_rate || p.score || 0);
+
     const pts = values.map((v, i) => ({
-      x: pad.left + (i / (values.length - 1)) * chartW,
-      y: pad.top + chartH - ((v - 50) / 50) * chartH
+      x: pad.left + (trendPoints.length === 1 ? chartW / 2 : (i / (values.length - 1)) * chartW),
+      y: pad.top + chartH - (Math.max(0, Math.min(50, v - 50)) / 50) * chartH
     }));
 
     ctx.beginPath();
@@ -72,6 +82,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       document.getElementById('kpiActive').textContent = activeCount;
       document.getElementById('kpiCompleted').textContent = completedCount;
 
+      try {
+        const trends = await window.ApiService.getAnalyticsTrends();
+        if (trends && trends.daily_satisfaction_trends) {
+          drawSatisfactionChart(trends.daily_satisfaction_trends);
+        } else {
+          drawSatisfactionChart([]);
+        }
+      } catch (err) {
+        drawSatisfactionChart([]);
+      }
+
       const tbody = document.getElementById('recentSessionsBody');
       if (!sessions.length) {
         tbody.innerHTML = '<tr><td colspan="6">No conversations found. Start a new session!</td></tr>';
@@ -88,7 +109,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <td>${escapeHTML(s.customer_scenario.slice(0, 65))}${s.customer_scenario.length > 65 ? '...' : ''}</td>
             <td><span class="badge ${badgeClass}">${escapeHTML(s.status)}</span></td>
             <td>
-              <a class="btn btn-secondary btn-sm" href="live-console.html?session_id=${encodeURIComponent(s.session_id)}">Open Console</a>
+              <a class="btn btn-secondary btn-sm" href="live-console?session_id=${encodeURIComponent(s.session_id)}">Open Console</a>
             </td>
           </tr>
         `;

@@ -52,17 +52,19 @@ class RAGService:
             mock_mode=self.mock_mode,
         )
 
+        effective_mock_mode = self.mock_mode or self.indexer.mock_mode
+
         # 4. Pinecone Hybrid Retriever
         self.retriever = PineconeHybridRetriever(
             pinecone_index=self.indexer.index,
             bm25_encoder=self.bm25_encoder,
             alpha=settings.hybrid_alpha,
             top_k=settings.top_k,
-            mock_mode=self.mock_mode,
+            mock_mode=effective_mock_mode,
         )
 
         # Link mock stores if in mock mode
-        if self.mock_mode and self.indexer.mock_store is not None:
+        if effective_mock_mode and self.indexer.mock_store is not None:
             self.retriever._mock_store = self.indexer.mock_store
 
         # 5. Query Rewriter Engine

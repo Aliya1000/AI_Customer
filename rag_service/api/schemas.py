@@ -21,6 +21,7 @@ class UploadResponse(BaseModel):
     documents_processed: int = Field(description="Total count of successfully parsed documents")
     total_chunks_indexed: int = Field(description="Total chunks upserted to Pinecone hybrid index")
     files: List[UploadFileMetadata] = Field(default_factory=list, description="Per-file processing breakdown")
+    session_id: Optional[str] = Field(default=None, description="Verified backend session ID")
 
 
 class RetrieveRequest(BaseModel):
@@ -30,6 +31,10 @@ class RetrieveRequest(BaseModel):
         min_length=1,
         description="The question or search query",
         examples=["How does Pinecone handle the dotproduct metric for hybrid search?"]
+    )
+    session_id: Optional[str] = Field(
+        default=None,
+        description="Backend session ID tied to the active conversation"
     )
     alpha: Optional[float] = Field(
         default=0.5,
@@ -64,6 +69,7 @@ class RetrievedChunk(BaseModel):
 
 class RetrieveResponse(BaseModel):
     """Response containing retrieved relevant document passages."""
+    session_id: Optional[str] = Field(default=None, description="Verified backend session ID")
     original_query: str = Field(description="The user's original raw question")
     rewritten_query: str = Field(description="The reformulated query optimized for Pinecone search")
     alpha_used: float = Field(description="The alpha parameter used for vector scaling")

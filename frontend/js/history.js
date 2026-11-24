@@ -37,8 +37,8 @@ document.addEventListener('DOMContentLoaded', async () => {
           <td>${escapeHTML(formatDate(s.created_at))}</td>
           <td><span class="badge ${statusBadge}">${escapeHTML(s.status)}</span></td>
           <td style="display:flex; gap:6px;">
-            <a class="btn btn-primary btn-sm" href="live-console.html?session_id=${encodeURIComponent(s.session_id)}">View Conversation</a>
-            <a class="btn btn-secondary btn-sm" href="coaching-report.html?session_id=${encodeURIComponent(s.session_id)}">Report</a>
+            <a class="btn btn-primary btn-sm" href="live-console?session_id=${encodeURIComponent(s.session_id)}">View Conversation</a>
+            <a class="btn btn-secondary btn-sm" href="coaching-report?session_id=${encodeURIComponent(s.session_id)}">Report</a>
           </td>
         </tr>
       `;

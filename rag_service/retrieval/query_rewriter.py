@@ -46,9 +46,9 @@ class QueryRewriter:
     """Rewrites and optimizes user questions for high-precision hybrid retrieval in Pinecone."""
 
     def __init__(self, use_llm_if_available: bool = True):
-        # Only enable OpenAI LLM if a genuine OpenAI key is provided (not a Groq 'gsk_' or placeholder key)
-        valid_openai_key = bool(settings.openai_api_key) and not settings.openai_api_key.startswith("gsk_") and not settings.openai_api_key.startswith("your_")
-        self.use_llm = use_llm_if_available and valid_openai_key
+        # Enable LLM if Groq or genuine OpenAI key is provided
+        has_llm_key = bool(settings.groq_api_key or settings.openai_api_key)
+        self.use_llm = use_llm_if_available and has_llm_key
         self._llm_chain = None
         if self.use_llm:
             self._init_llm_chain()
@@ -58,7 +58,6 @@ class QueryRewriter:
         try:
             from langchain_core.prompts import ChatPromptTemplate
             from langchain_core.output_parsers import StrOutputParser
-            from langchain_openai import ChatOpenAI
 
             prompt = ChatPromptTemplate.from_messages([
                 ("system", (
@@ -70,14 +69,30 @@ class QueryRewriter:
                 )),
                 ("human", "{question}"),
             ])
-            llm = ChatOpenAI(
-                model=settings.openai_model_name,
-                temperature=0.0,
-                openai_api_key=settings.openai_api_key,
-                max_tokens=60,
-                base_url=""
-            )
-            self._llm_chain = prompt | llm | StrOutputParser()
+
+            if settings.groq_api_key:
+                from langchain_groq import ChatGroq
+                vlm_model = settings.groq_vlm_model or "qwen/qwen3.8-27b"
+                groq_model = "qwen/qwen3.8-27b" if "qwen" in vlm_model else vlm_model
+                llm = ChatGroq(
+                    model=groq_model,
+                    temperature=0.0,
+                    api_key=settings.groq_api_key,
+                    max_tokens=60,
+                )
+            elif settings.openai_api_key:
+                from langchain_openai import ChatOpenAI
+                llm = ChatOpenAI(
+                    model=settings.openai_model_name,
+                    temperature=0.0,
+                    openai_api_key=settings.openai_api_key,
+                    max_tokens=60,
+                )
+            else:
+                llm = None
+
+            if llm:
+                self._llm_chain = prompt | llm | StrOutputParser()
         except Exception as e:
             print(f"Warning: Failed to initialize LLM query rewriter chain ({e}), falling back to rule-based.")
             self._llm_chain = None

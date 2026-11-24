@@ -11,7 +11,15 @@ from typing import List, Dict, Any, Union, Optional
 from langchain_core.documents import Document
 from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain_core.runnables import RunnablePassthrough
-from langchain_openai import ChatOpenAI
+try:
+    from langchain_groq import ChatGroq
+except ImportError:
+    ChatGroq = None
+
+try:
+    from langchain_openai import ChatOpenAI
+except ImportError:
+    ChatOpenAI = None
 
 from ..config import settings
 from ..parsers.output_parsers import (
@@ -107,18 +115,40 @@ class RAGChain:
         retriever: PineconeHybridRetriever,
         llm: Any = None,
         structured: bool = True,
-        mock_mode: bool = False,
+        mock_mode: Optional[bool] = None,
     ):
         self.retriever = retriever
         self.structured = structured
-        self.mock_mode = mock_mode or not bool(settings.openai_api_key)
 
-        # Setup LLM or Mock
-        if not self.mock_mode and settings.openai_api_key:
-            self.llm = llm or ChatOpenAI(
+        has_llm_key = bool(settings.groq_api_key or settings.openai_api_key)
+        if mock_mode is None:
+            self.mock_mode = False if has_llm_key else True
+        else:
+            self.mock_mode = mock_mode
+
+        # Setup Live LLM or Mock
+        if llm is not None:
+            self.llm = llm
+            self.mock_mode = False
+        elif not self.mock_mode and settings.groq_api_key and ChatGroq is not None:
+            vlm_model = settings.groq_vlm_model or "qwen/qwen3.8-27b"
+            groq_model = "qwen/qwen3.8-27b" if "qwen" in vlm_model else vlm_model
+            self.llm = ChatGroq(
+                model=groq_model,
+                temperature=0.0,
+                api_key=settings.groq_api_key,
+            )
+        elif not self.mock_mode and settings.openai_api_key and ChatOpenAI is not None:
+            self.llm = ChatOpenAI(
                 model=settings.openai_model_name,
                 temperature=0.0,
                 openai_api_key=settings.openai_api_key,
+            )
+        elif not self.mock_mode:
+            # Production enforcement: do not silently switch to MockLLM
+            raise RuntimeError(
+                "Production Mode Error: Live LLM inference provider (Groq or OpenAI) is required. "
+                "No valid API key or library found, and mock responses are disabled."
             )
         else:
             self.llm = MockLLM(structured=structured)

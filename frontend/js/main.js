@@ -49,10 +49,12 @@
       });
     }
 
-    const currentFile = window.location.pathname.split('/').pop() || 'dashboard.html';
+    const rawPath = window.location.pathname.replace(/\/$/, '') || '/dashboard';
+    const cleanCurrent = rawPath.replace(/\.html$/, '');
     document.querySelectorAll('.nav-link').forEach((link) => {
-      const href = link.getAttribute('href');
-      if (href === currentFile || (currentFile === 'index.html' && href === 'dashboard.html')) {
+      const rawHref = link.getAttribute('href') || '';
+      const cleanHref = rawHref.replace(/\.html$/, '').replace(/^\/?/, '/');
+      if (cleanHref === cleanCurrent || (cleanCurrent === '' && cleanHref === '/dashboard')) {
         link.classList.add('active');
       }
     });
@@ -63,23 +65,18 @@
 
     function renderMode() {
       if (!statusLabel || !statusDot || !window.ApiService) return;
-      const isMock = window.ApiService.config.USE_MOCK;
-      statusLabel.textContent = isMock ? 'Mock Data Mode' : `Live: ${window.ApiService.config.BASE_URL}`;
-      statusDot.className = `status-dot ${isMock ? 'mock' : 'live'}`;
-      if (modeBtn) modeBtn.textContent = isMock ? 'Switch to Live API' : 'Switch to Mock';
+      statusLabel.textContent = `API: ${window.ApiService.config.BASE_URL}`;
+      statusDot.className = 'status-dot live';
+      if (modeBtn) modeBtn.textContent = 'Change API URL';
     }
 
     if (modeBtn && window.ApiService) {
       modeBtn.addEventListener('click', () => {
-        const nextMock = !window.ApiService.config.USE_MOCK;
-        if (!nextMock) {
-          const url = prompt('Enter Python Backend Base URL:', window.ApiService.config.BASE_URL);
-          if (!url) return;
-          window.ApiService.config.BASE_URL = url.trim();
-        }
-        window.ApiService.config.USE_MOCK = nextMock;
+        const url = prompt('Enter Backend Base URL:', window.ApiService.config.BASE_URL);
+        if (!url) return;
+        window.ApiService.config.BASE_URL = url.trim();
         renderMode();
-        showToast(nextMock ? 'Switched to Mock Data mode' : 'Switched to Live Python API mode', 'info');
+        showToast(`Connected to backend: ${window.ApiService.config.BASE_URL}`, 'info');
         setTimeout(() => window.location.reload(), 600);
       });
     }

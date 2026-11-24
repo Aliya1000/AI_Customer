@@ -19,20 +19,20 @@
       </div>
       <nav class="sidebar-nav">
         <div class="nav-section-label">Workspace</div>
-        <a href="dashboard.html" class="nav-link">Dashboard</a>
-        <a href="session-config.html" class="nav-link">New Session Config</a>
-        <a href="live-console.html" class="nav-link">Live Support Console</a>
+        <a href="dashboard" class="nav-link">Dashboard</a>
+        <a href="session-config" class="nav-link">New Session Config</a>
+        <a href="live-console" class="nav-link">Live Support Console</a>
         <div class="nav-section-label">Knowledge & Review</div>
-        <a href="knowledge-base.html" class="nav-link">Knowledge Base (RAG)</a>
-        <a href="session-history.html" class="nav-link">Session History</a>
-        <a href="coaching-report.html" class="nav-link">Coaching Reports</a>
+        <a href="knowledge-base" class="nav-link">Knowledge Base (RAG)</a>
+        <a href="session-history" class="nav-link">Session History</a>
+        <a href="coaching-report" class="nav-link">Coaching Reports</a>
       </nav>
       <div class="sidebar-footer">
         <div class="api-status-box">
           <div class="api-status-row">
-            <span><span class="status-dot mock" id="apiStatusDot"></span><span id="apiModeLabel">Mock Data Mode</span></span>
+            <span><span class="status-dot live" id="apiStatusDot"></span><span id="apiModeLabel">Live API</span></span>
           </div>
-          <button class="btn-mode-toggle" id="toggleApiModeBtn" type="button">Switch to Live API</button>
+          <button class="btn-mode-toggle" id="toggleApiModeBtn" type="button">Change API URL</button>
         </div>
       </div>
     </aside>
@@ -48,7 +48,7 @@
         </div>
         <div class="topbar-actions">
           <select id="sessionSelector" style="width:220px;" aria-label="Select active session"></select>
-          <a id="viewReportLink" href="coaching-report.html" class="btn btn-secondary btn-sm">View Report</a>
+          <a id="viewReportLink" href="coaching-report" class="btn btn-secondary btn-sm">View Report</a>
         </div>
       </header>
 
@@ -92,7 +92,7 @@
           <section class="console-panel">
             <div class="panel-header">
               <h3>AI Coaching (6 Agents)</h3>
-              <span class="badge badge-warning" id="mockLabelBadge">Hybrid Orchestration</span>
+              <span class="badge badge-info" id="aiOrchestrationBadge">AI Orchestration</span>
             </div>
             <div class="panel-body">
               <!-- 1. Supervisor Agent -->
@@ -184,8 +184,8 @@
     </main>
   </div>
 
-  <script src="js/api.js"></script>
-  <script src="js/main.js"></script>
-  <script src="js/console.js"></script>
+  <script src="js/api.js?v=3.0"></script>
+  <script src="js/main.js?v=3.0"></script>
+  <script src="js/console.js?v=3.0"></script>
 </body>
 </html>
