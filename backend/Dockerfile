@@ -33,7 +33,7 @@ RUN groupadd -r appgroup && useradd -r -g appgroup -d /app -s /sbin/nologin appu
 COPY --from=builder /root/.local /home/appuser/.local
 
 ENV PATH=/home/appuser/.local/bin:$PATH
-ENV PYTHONPATH=/app:/app/backend:/app/rag_service
+ENV PYTHONPATH=/home/appuser/.local/lib/python3.12/site-packages:/app:/app/backend:/app/rag_service
 
 # Copy backend and RAG application
 COPY --chown=appuser:appgroup backend /app/backend
