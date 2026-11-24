@@ -8,6 +8,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 try:
+    from database.db_config import init_db
     from backend.app.config import settings
     from backend.app.routers import (
         sessions_router,
@@ -22,6 +23,7 @@ try:
     )
     from backend.app.services.session_service import SessionService
 except ImportError:
+    from database.db_config import init_db
     from app.config import settings
     from app.routers import (
         sessions_router,
@@ -38,12 +40,20 @@ except ImportError:
 
 logger = logging.getLogger("backend.app.main")
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Lifespan context manager for startup and shutdown actions."""
     logger.info(f"Starting {settings.app_name} in {settings.environment} mode")
+
+    try:
+        init_db()
+        logger.info("SQLite database initialized successfully")
+    except Exception:
+        logger.exception("SQLite database initialization failed")
+        raise
+
     yield
+
     logger.info(f"Shutting down {settings.app_name}")
 
 

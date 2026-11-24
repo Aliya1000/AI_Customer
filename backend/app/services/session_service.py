@@ -4,15 +4,19 @@ from fastapi import HTTPException
 
 try:
     from backend.app.schemas.session import SessionCreate, SessionResponse, SessionUpdate
-    from backend.app.supabase_client.session_repo import SessionRepository
-    from backend.app.supabase_client.message_repo import MessageRepository
-    from backend.app.supabase_client.product_repo import ProductRepository
+    from backend.app.sqlite_client.repositories import (
+        SessionRepository,
+        MessageRepository,
+        ProductRepository,
+    )
     from backend.app.llm.fallback_service import FallbackLLMService
 except ImportError:
     from app.schemas.session import SessionCreate, SessionResponse, SessionUpdate
-    from app.supabase_client.session_repo import SessionRepository
-    from app.supabase_client.message_repo import MessageRepository
-    from app.supabase_client.product_repo import ProductRepository
+    from app.sqlite_client.repositories import (
+        SessionRepository,
+        MessageRepository,
+        ProductRepository,
+    )
     from app.llm.fallback_service import FallbackLLMService
 
 try:

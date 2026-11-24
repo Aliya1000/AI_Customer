@@ -42,3 +42,7 @@ logs/
 Thumbs.db
 .vscode/
 .idea/
+
+# Local uploaded knowledge documents and test files
+backend/data/
+/test_knowledge.txt

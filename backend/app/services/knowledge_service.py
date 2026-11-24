@@ -10,15 +10,15 @@ try:
         KnowledgeDocDeleteResponse,
         KnowledgeDocResponse,
     )
-    from backend.app.supabase_client.knowledge_repo import KnowledgeRepository
-    from backend.app.supabase_client.storage import DocumentStorage
+    from backend.app.sqlite_client.repositories import KnowledgeRepository
+    from backend.app.local_storage import DocumentStorage
 except ImportError:
     from app.schemas.knowledge import (
         KnowledgeDocDeleteResponse,
         KnowledgeDocResponse,
     )
-    from app.supabase_client.knowledge_repo import KnowledgeRepository
-    from app.supabase_client.storage import DocumentStorage
+    from app.sqlite_client.repositories import KnowledgeRepository
+    from app.local_storage import DocumentStorage
 
 try:
     from backend.app.services.rag_client import RAGServiceClient
@@ -112,18 +112,6 @@ class KnowledgeService:
                 self.storage.delete_file(storage_path)
             except Exception as e:
                 logger.warning(f"Storage deletion failed for {storage_path}: {e}")
-
-        # Clean any remaining keys in mock store if active
-        try:
-            from backend.app.supabase_client.client import get_mock_store
-            store = get_mock_store()
-            bucket = store.storage.get("knowledge-docs", {})
-            matching = [k for k in bucket.keys() if document_id in k]
-            for k in matching:
-                bucket.pop(k, None)
-        except Exception:
-            pass
-
         # 2. Delete from repository
         self.knowledge_repo.delete_document(document_id)
 

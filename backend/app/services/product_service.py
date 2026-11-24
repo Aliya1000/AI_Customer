@@ -3,10 +3,10 @@ from fastapi import HTTPException
 
 try:
     from backend.app.schemas.product import ProductResponse
-    from backend.app.supabase_client.product_repo import ProductRepository
+    from backend.app.sqlite_client.repositories import ProductRepository
 except ImportError:
     from app.schemas.product import ProductResponse
-    from app.supabase_client.product_repo import ProductRepository
+    from app.sqlite_client.repositories import ProductRepository
 
 
 class ProductService:

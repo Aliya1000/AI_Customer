@@ -4,15 +4,19 @@ from fastapi import HTTPException
 
 try:
     from backend.app.schemas.report import CoachingReportResponse
-    from backend.app.supabase_client.report_repo import ReportRepository
-    from backend.app.supabase_client.session_repo import SessionRepository
-    from backend.app.supabase_client.message_repo import MessageRepository
+    from backend.app.sqlite_client.repositories import (
+    ReportRepository,
+    SessionRepository,
+    MessageRepository,
+)
     from backend.app.llm.fallback_service import FallbackLLMService
 except ImportError:
     from app.schemas.report import CoachingReportResponse
-    from app.supabase_client.report_repo import ReportRepository
-    from app.supabase_client.session_repo import SessionRepository
-    from app.supabase_client.message_repo import MessageRepository
+    from app.sqlite_client.repositories import (
+    ReportRepository,
+    SessionRepository,
+    MessageRepository,
+)
     from app.llm.fallback_service import FallbackLLMService
 
 logger = logging.getLogger("backend.app.services.report_service")

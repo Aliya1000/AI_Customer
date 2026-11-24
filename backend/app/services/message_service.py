@@ -5,16 +5,20 @@ from fastapi import HTTPException
 
 try:
     from backend.app.schemas.message import MessageCreate, MessageResponse, SendMessageResponse
-    from backend.app.supabase_client.message_repo import MessageRepository
-    from backend.app.supabase_client.session_repo import SessionRepository
-    from backend.app.supabase_client.product_repo import ProductRepository
+    from backend.app.sqlite_client.repositories import (
+    MessageRepository,
+    SessionRepository,
+    ProductRepository,
+)
     from backend.app.llm.fallback_service import FallbackLLMService
     from backend.app.llm.simulator import CustomerSimulator
 except ImportError:
     from app.schemas.message import MessageCreate, MessageResponse, SendMessageResponse
-    from app.supabase_client.message_repo import MessageRepository
-    from app.supabase_client.session_repo import SessionRepository
-    from app.supabase_client.product_repo import ProductRepository
+    from app.sqlite_client.repositories import (
+    MessageRepository,
+    SessionRepository,
+    ProductRepository,
+)
     from app.llm.fallback_service import FallbackLLMService
     from app.llm.simulator import CustomerSimulator
 
