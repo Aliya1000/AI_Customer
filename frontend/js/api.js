@@ -17,13 +17,9 @@
         return window.location.origin;
       }
       // If deployed in production without custom development ports
-      if (
-        window.location.origin &&
-        (window.location.protocol === 'http:' || window.location.protocol === 'https:') &&
-        !['5500', '5501', '3000', '5173', '8080'].includes(window.location.port) &&
-        window.location.port !== ''
-      ) {
-        return window.location.origin;
+      // Production: connect GitHub Pages frontend to Render backend
+      if (window.location.hostname === 'aliya1000.github.io') {
+        return 'https://ai-customer-backend-sqq8.onrender.com';
       }
       // Development default: static server (port 5500/3000/5173) or file:// -> target FastAPI at port 8000
       return 'http://localhost:8000';
