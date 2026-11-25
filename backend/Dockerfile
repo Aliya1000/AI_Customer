@@ -40,10 +40,6 @@ COPY --chown=appuser:appgroup backend /app/backend
 COPY --chown=appuser:appgroup rag_service /app/rag_service
 COPY --chown=appuser:appgroup frontend /app/frontend
 
-# Copy SQLite source files (not the local database binary)
-COPY --chown=appuser:appgroup database/*.py /app/database/
-COPY --chown=appuser:appgroup database/*.sql /app/database/
-
 USER appuser
 
 EXPOSE 8000
