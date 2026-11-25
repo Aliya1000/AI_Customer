@@ -4,20 +4,22 @@ from fastapi import HTTPException
 
 try:
     from backend.app.schemas.session import SessionCreate, SessionResponse, SessionUpdate
-    from backend.app.sqlite_client.repositories import (
+    from backend.app.supabase_client import (
         SessionRepository,
         MessageRepository,
         ProductRepository,
     )
     from backend.app.llm.fallback_service import FallbackLLMService
+    from backend.app.llm.mock_generator import generate_mock_agent_outputs
 except ImportError:
     from app.schemas.session import SessionCreate, SessionResponse, SessionUpdate
-    from app.sqlite_client.repositories import (
+    from app.supabase_client import (
         SessionRepository,
         MessageRepository,
         ProductRepository,
     )
     from app.llm.fallback_service import FallbackLLMService
+    from app.llm.mock_generator import generate_mock_agent_outputs
 
 try:
     from backend.app.services.rag_client import RAGServiceClient
@@ -65,7 +67,18 @@ class SessionService:
         if not session:
             raise HTTPException(status_code=404, detail=f"Session '{session_id}' not found")
 
-        return SessionResponse(**session)
+        messages = self.message_repo.get_messages_for_session(session_id)
+        product = self._lookup_product(session.get("product_name", ""))
+
+        session_copy = dict(session)
+        if not session_copy.get("agent_outputs"):
+            session_copy["agent_outputs"] = generate_mock_agent_outputs(
+                session=session,
+                messages=messages,
+                rag_context=[],
+                product=product,
+            )
+        return SessionResponse(**session_copy)
 
     def update_session(self, session_id: str, updates: SessionUpdate) -> SessionResponse:
         updated = self.session_repo.update_session(session_id, updates)

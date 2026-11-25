@@ -8,17 +8,17 @@ from typing import List, Dict, Any, Optional
 from pathlib import Path
 
 try:
-    from backend.app.sqlite_client.repositories import (
-    SessionRepository,
-    MessageRepository,
-    ReportRepository,
-)
+    from backend.app.supabase_client import (
+        SessionRepository,
+        MessageRepository,
+        ReportRepository,
+    )
 except ImportError:
-    from app.sqlite_client.repositories import (
-    SessionRepository,
-    MessageRepository,
-    ReportRepository,
-)
+    from app.supabase_client import (
+        SessionRepository,
+        MessageRepository,
+        ReportRepository,
+    )
 
 
 class GoldenDatasetService:

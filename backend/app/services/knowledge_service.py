@@ -10,15 +10,13 @@ try:
         KnowledgeDocDeleteResponse,
         KnowledgeDocResponse,
     )
-    from backend.app.sqlite_client.repositories import KnowledgeRepository
-    from backend.app.local_storage import DocumentStorage
+    from backend.app.supabase_client import KnowledgeRepository, DocumentStorage
 except ImportError:
     from app.schemas.knowledge import (
         KnowledgeDocDeleteResponse,
         KnowledgeDocResponse,
     )
-    from app.sqlite_client.repositories import KnowledgeRepository
-    from app.local_storage import DocumentStorage
+    from app.supabase_client import KnowledgeRepository, DocumentStorage
 
 try:
     from backend.app.services.rag_client import RAGServiceClient
