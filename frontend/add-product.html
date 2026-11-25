@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Product | AI Customer Support Coaching</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-logo">AI</div>
+        <div class="brand-text">
+          <h2>SupportCoach AI</h2>
+          <span>Multi-Agent Coaching Suite</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Workspace</div>
+        <a href="dashboard" class="nav-link">Dashboard</a>
+        <a href="session-config" class="nav-link">New Session Config</a>
+        <a href="live-console" class="nav-link">Live Support Console</a>
+        <div class="nav-section-label">Knowledge & Review</div>
+        <a href="add-product" class="nav-link">Add Product</a>
+        <a href="knowledge-base" class="nav-link">Knowledge Base (RAG)</a>
+        <a href="session-history" class="nav-link">Session History</a>
+        <a href="coaching-report" class="nav-link">Coaching Reports</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="api-status-box">
+          <div class="api-status-row">
+            <span><span class="status-dot live" id="apiStatusDot"></span><span id="apiModeLabel">Live API</span></span>
+          </div>
+          <button class="btn-mode-toggle" id="toggleApiModeBtn" type="button">Change API URL</button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-btn" id="sidebarToggle" type="button">☰</button>
+          <div>
+            <h1 class="page-title">Add New Product</h1>
+            <p class="page-subtitle">Collect product details and upload required documents to the knowledge base via the RAG pipeline</p>
+          </div>
+        </div>
+      </header>
+
+      <div class="page-body">
+        <div class="card" style="max-width: 920px; margin-bottom: 20px;">
+          <div class="card-header">
+            <h2 class="card-title">Product Details &amp; RAG Document Upload</h2>
+            <span class="badge badge-info">PDF, DOCX, Images, MD, TXT, JSON</span>
+          </div>
+
+          <form id="addProductForm" novalidate>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="newProductName">Product Name <span class="required">*</span></label>
+                <input type="text" id="newProductName" placeholder="e.g., NovaBuds X2 Wireless Earbuds" required />
+                <span class="error-text" id="errProdName"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="newProductCategory">Product Category <span class="required">*</span></label>
+                <select id="newProductCategory" required>
+                  <option value="">-- Select category --</option>
+                  <option value="Audio Hardware">Audio Hardware</option>
+                  <option value="Wearables">Wearables</option>
+                  <option value="SaaS Software">SaaS Software</option>
+                  <option value="Smart Home">Smart Home</option>
+                  <option value="Consumer Electronics">Consumer Electronics</option>
+                  <option value="Other">Other</option>
+                </select>
+                <span class="error-text" id="errProdCategory"></span>
+              </div>
+
+              <div class="form-group full-width hidden" id="customCategoryGroup">
+                <label for="customProductCategory">Custom Category <span class="required">*</span></label>
+                <input type="text" id="customProductCategory" placeholder="Enter custom product category..." />
+                <span class="error-text" id="errCustomCategory"></span>
+              </div>
+
+              <div class="form-group full-width">
+                <label for="newProductDescription">Product Details / Description <span class="required">*</span></label>
+                <textarea id="newProductDescription" rows="3" placeholder="Key specifications, warranty terms, supported features, and troubleshooting notes..." required></textarea>
+                <span class="error-text" id="errProdDescription"></span>
+              </div>
+
+              <div class="form-group full-width">
+                <label for="productDocsInput">Knowledge Base Documents (Must) <span class="required">*</span></label>
+                <input type="file" id="productDocsInput" accept=".pdf,.docx,.doc,.png,.jpg,.jpeg,.webp,.bmp,.txt,.md,.markdown,.json" multiple required />
+                <span class="helper-text" id="selectedDocsInfo">Upload one or more manuals, Word docs, images/diagrams, Markdown, TXT, or JSON files (.pdf, .docx, .doc, .png, .jpg, .jpeg, .webp, .bmp, .txt, .md, .markdown, .json).</span>
+                <span class="error-text" id="errProdDocs"></span>
+              </div>
+            </div>
+
+            <div style="display:flex; gap:12px; margin-top:16px; align-items:center; flex-wrap:wrap;">
+              <button type="submit" class="btn btn-primary" id="submitProductBtn">Add Product &amp; Send to RAG Pipeline</button>
+              <span id="addProductLoading" class="hidden"><span class="spinner"></span> Creating product &amp; indexing documents...</span>
+            </div>
+          </form>
+
+          <div id="productCreatedBox" class="card hidden" style="margin-top:20px; background:#ecfdf5; border-color:#a7f3d0;">
+            <h3 style="color:#065f46; margin-bottom:6px;">Product Added &amp; Documents Indexed</h3>
+            <p style="font-size:0.9rem; margin-bottom:10px;" id="productCreatedSummary"></p>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <a id="useInSessionLink" href="session-config" class="btn btn-primary btn-sm">Select Product in New Session</a>
+              <a href="knowledge-base" class="btn btn-secondary btn-sm">View Knowledge Base</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="max-width: 920px;">
+          <div class="card-header">
+            <h2 class="card-title">Registered Products</h2>
+            <span class="badge badge-info" id="productCountBadge">0 products</span>
+          </div>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Product ID</th>
+                  <th>Product Name</th>
+                  <th>Category</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody id="productsTableBody">
+                <tr><td colspan="4">Loading products...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/api.js?v=3.0"></script>
+  <script src="js/main.js?v=3.0"></script>
+  <script src="js/add-product.js?v=3.0"></script>
+</body>
+</html>

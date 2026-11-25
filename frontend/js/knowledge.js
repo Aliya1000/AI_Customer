@@ -1,11 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
   const { escapeHTML, formatDate, showToast } = window.UIUtils;
 
-  const uploadForm = document.getElementById('kbUploadForm');
-  const fileInput = document.getElementById('kbFileInput');
   const searchInput = document.getElementById('kbSearchInput');
   const tableBody = document.getElementById('kbTableBody');
-  const uploadBtn = document.getElementById('uploadDocBtn');
 
   let allDocs = [];
 
@@ -50,33 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   searchInput.addEventListener('input', filterAndRender);
-
-  uploadForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const file = fileInput.files[0];
-    if (!file) return;
-    const ext = file.name.split('.').pop().toLowerCase();
-    if (!['pdf', 'txt', 'json'].includes(ext)) {
-      showToast('Invalid file type. Only PDF, TXT, and JSON are allowed.', 'error');
-      return;
-    }
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-      uploadBtn.disabled = true;
-      uploadBtn.textContent = 'Uploading...';
-      await window.ApiService.uploadKnowledgeDocument(formData);
-      fileInput.value = '';
-      showToast(`${file.name} uploaded successfully.`, 'success');
-      await loadDocuments();
-    } catch (err) {
-      showToast(`Upload failed: ${err.message}`, 'error');
-    } finally {
-      uploadBtn.disabled = false;
-      uploadBtn.textContent = 'Upload Document';
-    }
-  });
 
   tableBody.addEventListener('click', async (e) => {
     const btn = e.target.closest('.delete-doc-btn');

@@ -22,6 +22,7 @@
         <a href="session-config" class="nav-link">New Session Config</a>
         <a href="live-console" class="nav-link">Live Support Console</a>
         <div class="nav-section-label">Knowledge & Review</div>
+        <a href="add-product" class="nav-link">Add Product</a>
         <a href="knowledge-base" class="nav-link">Knowledge Base (RAG)</a>
         <a href="session-history" class="nav-link">Session History</a>
         <a href="coaching-report" class="nav-link">Coaching Reports</a>
@@ -48,24 +49,13 @@
       </header>
 
       <div class="page-body">
-        <div class="card" style="margin-bottom:20px;">
-          <div class="card-header">
-            <h2 class="card-title">Upload Document to RAG Pipeline</h2>
-            <span class="badge badge-info">PDF, TXT, JSON</span>
-          </div>
-          <form id="kbUploadForm" style="display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap;">
-            <div class="form-group" style="flex:1; min-width:260px;">
-              <label for="kbFileInput">Select Document <span class="required">*</span></label>
-              <input type="file" id="kbFileInput" accept=".pdf,.txt,.json" required />
-            </div>
-            <button type="submit" class="btn btn-primary" id="uploadDocBtn">Upload Document</button>
-          </form>
-        </div>
-
         <div class="card">
           <div class="card-header">
             <h2 class="card-title">Indexed Knowledge Documents</h2>
-            <input type="search" id="kbSearchInput" placeholder="Search by filename..." style="max-width:260px;" />
+            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+              <input type="search" id="kbSearchInput" placeholder="Search by filename..." style="max-width:260px;" />
+              <a href="add-product" class="btn btn-primary btn-sm">+ Add Product &amp; Upload Docs</a>
+            </div>
           </div>
           <div class="table-responsive">
             <table>

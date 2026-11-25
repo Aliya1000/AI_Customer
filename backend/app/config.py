@@ -53,7 +53,7 @@ class Settings(BaseSettings):
 
     # LLM API keys & Models
     groq_api_key: Optional[str] = None
-    groq_model: str = "qwen/qwen3.8-27b"
+    groq_model: str = "openai/gpt-oss-20b"
     openai_api_key: Optional[str] = None
     anthropic_api_key: Optional[str] = None
     gemini_api_key: Optional[str] = None

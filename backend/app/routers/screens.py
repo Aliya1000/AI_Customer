@@ -97,6 +97,18 @@ def redirect_knowledge_base(request: Request) -> RedirectResponse:
     return _clean_redirect("/knowledge-base", request)
 
 
+# 6b. Add Product Screen
+@router.get("/add-product")
+def add_product_screen() -> FileResponse:
+    """Add new product with required RAG knowledge base documents."""
+    return _serve_screen("add-product.html")
+
+
+@router.get("/add-product.html")
+def redirect_add_product(request: Request) -> RedirectResponse:
+    return _clean_redirect("/add-product", request)
+
+
 # 7. Coaching Report Screen
 @router.get("/coaching-report")
 def coaching_report_screen() -> FileResponse:

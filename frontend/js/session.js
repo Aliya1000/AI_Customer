@@ -16,9 +16,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   try {
     const products = await window.ApiService.getProducts();
-    const list = document.getElementById('productSuggestions');
-    list.innerHTML = products.map((p) => `<option value="${p.product_name}"></option>`).join('');
-  } catch (_) {}
+    const { escapeHTML } = window.UIUtils;
+    productInput.innerHTML = [
+      '<option value="">-- Select a product --</option>',
+      ...products.map(
+        (p) => `<option value="${escapeHTML(p.product_name)}">${escapeHTML(p.product_name)} (${escapeHTML(p.product_category)})</option>`
+      )
+    ].join('');
+
+    const params = new URLSearchParams(window.location.search);
+    const preselected = params.get('product');
+    if (preselected) {
+      productInput.value = preselected;
+    }
+  } catch (_) {
+    productInput.innerHTML = '<option value="">-- Unable to load products --</option>';
+  }
 
   function updateModeVisibility() {
     const mode = modeSelect.value;
@@ -72,7 +85,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     if (!productInput.value.trim()) {
-      document.getElementById('errProduct').textContent = 'Product name is required.';
+      document.getElementById('errProduct').textContent = 'Please select a product.';
       valid = false;
     }
     if (!contextInput.value.trim()) {

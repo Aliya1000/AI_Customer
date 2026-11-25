@@ -211,7 +211,7 @@ class FallbackLLMService:
         self.force_mock = force_mock
         self.providers = providers or ["groq", "openai", "anthropic", "gemini", "mock"]
         self.model_names = model_names or {
-            "groq": getattr(settings, "groq_model", "qwen/qwen3.8-27b") or "qwen/qwen3.8-27b",
+            "groq": getattr(settings, "groq_model", "openai/gpt-oss-20b") or "openai/gpt-oss-20b",
             "openai": "gpt-4o-mini",
             "anthropic": "claude-3-5-haiku-20241022",
             "gemini": "gemini-2.0-flash",
@@ -282,7 +282,7 @@ class FallbackLLMService:
         if provider == "groq":
             from langchain_groq import ChatGroq
             return ChatGroq(
-                model=self.model_names.get("groq", "qwen/qwen3.8-27b"),
+                model=self.model_names.get("groq", "openai/gpt-oss-20b"),
                 api_key=key,
                 temperature=0.1,
             )
@@ -346,13 +346,27 @@ class FallbackLLMService:
                 logger.info(f"Executing LLM inference via provider: '{provider}'")
                 result = run_provider_fn(provider)
                 return result
-
-                
             except Exception as exc:
                 logger.warning(
                     f"Provider '{provider}' failed with {type(exc).__name__}: {exc}. "
-                    f"Proceeding to next provider in fallback cascade."
+                    f"Proceeding to next fallback."
                 )
+                if provider == "groq":
+                    original_model = self.model_names.get("groq")
+                    for backup_model in ("openai/gpt-oss-20b", "openai/gpt-oss-120b"):
+                        if backup_model == original_model:
+                            continue
+                        try:
+                            logger.info(f"Retrying Groq with backup model '{backup_model}'")
+                            self.model_names["groq"] = backup_model
+                            return run_provider_fn("groq")
+                        except Exception as backup_exc:
+                            logger.warning(
+                                f"Groq backup model '{backup_model}' failed with {type(backup_exc).__name__}: {backup_exc}"
+                            )
+                        finally:
+                            if original_model is not None:
+                                self.model_names["groq"] = original_model
                 continue
 
         if settings.environment == "production" and not self.force_mock:

@@ -113,9 +113,16 @@
       return httpRequest(`/api/sessions/${encodeURIComponent(id)}/coaching-report`);
     },
 
-    // 10. GET /api/products
+    // 10. GET /api/products & POST /api/products
     async getProducts() {
       return httpRequest('/api/products');
+    },
+
+    async createProduct(payload) {
+      return httpRequest('/api/products', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
     },
 
     // 11. GET /api/analytics/trends

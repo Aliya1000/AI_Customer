@@ -65,39 +65,7 @@ class SessionService:
         if not session:
             raise HTTPException(status_code=404, detail=f"Session '{session_id}' not found")
 
-        messages = self.message_repo.get_messages_for_session(session_id)
-
-        # Lookup product
-        product = self._lookup_product(session.get("product_name", ""))
-
-        # Determine query for RAG context
-        query_text = ""
-        if messages:
-            query_text = messages[-1].get("message_text", "")
-        if not query_text:
-            query_text = session.get("customer_scenario", "") or session.get("product_name", "")
-
-        rag_chunks = []
-        try:
-            rag_chunks = await self.rag_client.retrieve_relevant_information(
-                query=query_text,
-                session_id=session_id,
-                top_k=3,
-            )
-        except Exception as e:
-            logger.warning(f"RAG retrieval during get_session failed: {e}")
-            rag_chunks = []
-
-        agent_outputs = self.llm_service.generate_agent_outputs(
-            session=session,
-            messages=messages,
-            rag_context=rag_chunks,
-            product=product,
-        )
-
-        session_copy = dict(session)
-        session_copy["agent_outputs"] = agent_outputs
-        return SessionResponse(**session_copy)
+        return SessionResponse(**session)
 
     def update_session(self, session_id: str, updates: SessionUpdate) -> SessionResponse:
         updated = self.session_repo.update_session(session_id, updates)

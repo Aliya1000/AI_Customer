@@ -22,6 +22,7 @@
         <a href="session-config" class="nav-link">New Session Config</a>
         <a href="live-console" class="nav-link">Live Support Console</a>
         <div class="nav-section-label">Knowledge & Review</div>
+        <a href="add-product" class="nav-link">Add Product</a>
         <a href="knowledge-base" class="nav-link">Knowledge Base (RAG)</a>
         <a href="session-history" class="nav-link">Session History</a>
         <a href="coaching-report" class="nav-link">Coaching Reports</a>
@@ -68,8 +69,10 @@
 
               <div class="form-group">
                 <label for="productName">Product Name <span class="required">*</span></label>
-                <input type="text" id="productName" list="productSuggestions" placeholder="e.g., AeroSound Pro ANC Headphones" required />
-                <datalist id="productSuggestions"></datalist>
+                <select id="productName" name="product_name" required>
+                  <option value="">-- Loading products... --</option>
+                </select>
+                <span class="helper-text">Need a new product? <a href="add-product">Add Product &amp; RAG Docs</a></span>
                 <span class="error-text" id="errProduct"></span>
               </div>
 

@@ -23,6 +23,8 @@ class TestScreenURLHandlers:
             ("/session-history.html", "Session History"),
             ("/knowledge-base", "Knowledge Base"),
             ("/knowledge-base.html", "Knowledge Base"),
+            ("/add-product", "Add New Product"),
+            ("/add-product.html", "Add New Product"),
             ("/coaching-report", "Coaching Report"),
             ("/coaching-report.html", "Coaching Report"),
         ],

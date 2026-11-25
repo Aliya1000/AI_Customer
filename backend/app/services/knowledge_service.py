@@ -27,7 +27,34 @@ except ImportError:
 
 logger = logging.getLogger("backend.app.services.knowledge_service")
 
-ALLOWED_EXTENSIONS = {"PDF", "TXT", "JSON"}
+ALLOWED_EXTENSIONS = {
+    "PDF",
+    "DOCX",
+    "DOC",
+    "PNG",
+    "JPG",
+    "JPEG",
+    "WEBP",
+    "BMP",
+    "TXT",
+    "MD",
+    "MARKDOWN",
+    "JSON",
+}
+CONTENT_TYPE_MAP = {
+    "PDF": "application/pdf",
+    "DOCX": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "DOC": "application/msword",
+    "PNG": "image/png",
+    "JPG": "image/jpeg",
+    "JPEG": "image/jpeg",
+    "WEBP": "image/webp",
+    "BMP": "image/bmp",
+    "TXT": "text/plain",
+    "MD": "text/markdown",
+    "MARKDOWN": "text/markdown",
+    "JSON": "application/json",
+}
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
 
 
@@ -49,7 +76,10 @@ class KnowledgeService:
         if ext not in ALLOWED_EXTENSIONS:
             raise HTTPException(
                 status_code=400,
-                detail=f"Unsupported file extension '.{ext}'. Allowed extensions are: PDF, TXT, JSON",
+                detail=(
+                    f"Unsupported file extension '.{ext}'. Allowed extensions are: "
+                    "PDF, DOCX, DOC, PNG, JPG, JPEG, WEBP, BMP, TXT, MD, MARKDOWN, JSON"
+                ),
             )
 
         content_bytes = await file.read()
@@ -64,14 +94,7 @@ class KnowledgeService:
         document_id = f"DOC-{ts_suffix}-{uuid.uuid4().hex[:3].upper()}"
         storage_path = f"{document_id}/{filename}"
 
-        ctype = file.content_type
-        if not ctype:
-            if ext == "PDF":
-                ctype = "application/pdf"
-            elif ext == "JSON":
-                ctype = "application/json"
-            else:
-                ctype = "text/plain"
+        ctype = file.content_type or CONTENT_TYPE_MAP.get(ext, "application/octet-stream")
 
         # 1. Upload to Supabase Storage
         try:
