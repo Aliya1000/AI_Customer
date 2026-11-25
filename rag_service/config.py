@@ -47,7 +47,12 @@ class Settings:
     nvidia_embedding_model: str = os.getenv("NVIDIA_EMBEDDING_MODEL", "nvidia/nemotron-3.5-embed-1b")
 
     # Groq Configuration for Vision VLM (using langchain-groq)
-    groq_api_key: str = os.getenv("GROQ_API_KEY", "") or (os.getenv("OPENAI_API_KEY", "") if os.getenv("OPENAI_API_KEY", "").startswith("gsk_") else "")
+    # Supports GROQ_API_KEY2 so rag_service can use a dedicated Groq key separate from backend
+    groq_api_key: str = (
+        os.getenv("GROQ_API_KEY2", "")
+        or os.getenv("GROQ_API_KEY", "")
+        or (os.getenv("OPENAI_API_KEY", "") if os.getenv("OPENAI_API_KEY", "").startswith("gsk_") else "")
+    )
     groq_vlm_model: str = os.getenv("GROQ_VLM_MODEL", "qwen/qwen3.8-27b")
 
     # Vision-Language Model (VLM) for Image Text & Document Extraction
