@@ -11,6 +11,7 @@ handling:
 
 import re
 import math
+import time
 import requests
 from typing import List, Optional
 from langchain_core.embeddings import Embeddings
@@ -104,15 +105,27 @@ class NVIDIAInferenceEmbeddings(Embeddings):
             "dimensions": self.dimension,
         }
 
-        try:
-            response = requests.post(
-                url,
-                headers=headers,
-                json=payload,
-                timeout=self.timeout,
-            )
-        except requests.RequestException as e:
-            raise RuntimeError(f"Network error communicating with NVIDIA NIM ({url}): {e}") from e
+        last_error: Optional[Exception] = None
+        response = None
+        for attempt in range(3):
+            try:
+                response = requests.post(
+                    url,
+                    headers=headers,
+                    json=payload,
+                    timeout=self.timeout,
+                )
+            except requests.RequestException as e:
+                last_error = RuntimeError(f"Network error communicating with NVIDIA NIM ({url}): {e}")
+                if attempt < 2:
+                    time.sleep(0.8 * (2 ** attempt))
+                    continue
+                raise last_error from e
+
+            if response.status_code in (429, 500, 502, 503, 504) and attempt < 2:
+                time.sleep(0.8 * (2 ** attempt))
+                continue
+            break
 
         if response.status_code != 200:
             error_detail = response.text
