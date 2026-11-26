@@ -22,7 +22,7 @@ class RAGServiceClient:
         self,
         base_url: Optional[str] = None,
         internal_secret: Optional[str] = None,
-        timeout: float = 6.0,
+        timeout: float = 20.0,
     ):
         settings = get_settings()
         self.base_url = (base_url or settings.rag_service_url).rstrip("/")
@@ -98,7 +98,7 @@ class RAGServiceClient:
         ]
 
         try:
-            async with httpx.AsyncClient(timeout=15.0) as client:
+            async with httpx.AsyncClient(timeout=60.0) as client:
                 res = await client.post(url, files=multipart_files, headers=headers)
                 if res.status_code in (200, 201):
                     return res.json()
