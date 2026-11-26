@@ -29,13 +29,17 @@
       if (saved && LEGACY_BACKEND_URLS.includes(saved)) {
         localStorage.removeItem('api_base_url');
       }
-      // If the page is served directly from the FastAPI backend on port 8000, use window.location.origin
-      if (window.location.origin && window.location.port === '8000') {
-        return window.location.origin;
-      }
       // Production: connect GitHub Pages frontend to Render backend
       if (window.location.hostname === 'aliya1000.github.io') {
         return PRODUCTION_BACKEND_URL;
+      }
+      // If served directly from FastAPI backend (locally on port 8000 or hosted on Render/production)
+      if (
+        window.location.origin &&
+        (window.location.protocol === 'http:' || window.location.protocol === 'https:') &&
+        !['5500', '5501', '3000', '5173', '8080'].includes(window.location.port)
+      ) {
+        return window.location.origin;
       }
       // Development default: static server (port 5500/3000/5173) or file:// -> target FastAPI at port 8000
       return 'http://localhost:8000';
