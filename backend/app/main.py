@@ -106,7 +106,17 @@ def create_app() -> FastAPI:
     @app.get("/health", tags=["Health"])
     @app.get(f"{api_prefix}/health", tags=["Health"])
     def health():
-        return {"status": "healthy"}
+        try:
+            from backend.app.supabase_client.client import MockSupabaseClient, get_supabase_client
+        except ImportError:
+            from app.supabase_client.client import MockSupabaseClient, get_supabase_client
+        db_client = get_supabase_client()
+        db_mode = "mock" if isinstance(db_client, MockSupabaseClient) else "supabase"
+        return {
+            "status": "healthy",
+            "database": db_mode,
+            "environment": settings.environment,
+        }
 
     # 5. Static frontend assets & UI Screen routes
     frontend_dir = Path(__file__).resolve().parent.parent.parent / "frontend"

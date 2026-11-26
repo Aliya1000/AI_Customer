@@ -55,12 +55,14 @@ def get_supabase_client(force_mock: bool = False) -> Any:
     Prioritizes SUPABASE_SERVICE_ROLE_KEY for server operations, falling back to SUPABASE_KEY.
     """
     settings = get_settings()
-    active_key = settings.supabase_service_role_key or settings.supabase_key
+    supabase_url = (settings.supabase_url or "").strip().strip('"').strip("'")
+    raw_key = settings.supabase_service_role_key or settings.supabase_key or ""
+    active_key = raw_key.strip().strip('"').strip("'")
 
     if (
         force_mock
         or settings.force_mock_supabase
-        or not settings.supabase_url
+        or not supabase_url
         or not active_key
     ):
         return MockSupabaseClient(get_mock_store())
@@ -76,7 +78,7 @@ def get_supabase_client(force_mock: bool = False) -> Any:
         finally:
             sys.path = orig_sys_path
 
-        client: Client = create_client(settings.supabase_url, active_key)
+        client: Client = create_client(supabase_url, active_key)
         return client
     except ImportError:
         logger.info(
