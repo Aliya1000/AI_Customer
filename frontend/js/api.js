@@ -8,24 +8,43 @@
 (function (window) {
   'use strict';
 
+  function normalizeBaseUrl(raw) {
+    if (!raw) return '';
+    return String(raw)
+      .trim()
+      .replace(/^["']+|["']+$/g, '')
+      .replace(/\/+$/, '')
+      .replace(/\/(docs|redoc|api)$/i, '');
+  }
+
+  const PRODUCTION_BACKEND_URL = 'https://ai-customer-backend-t3e5.onrender.com';
+  const LEGACY_BACKEND_URLS = ['https://ai-customer-backend-sqq8.onrender.com'];
+
   const AppConfig = {
     get BASE_URL() {
-      const saved = localStorage.getItem('api_base_url');
-      if (saved) return saved;
+      const saved = normalizeBaseUrl(localStorage.getItem('api_base_url'));
+      if (saved && !LEGACY_BACKEND_URLS.includes(saved)) {
+        return saved;
+      }
+      if (saved && LEGACY_BACKEND_URLS.includes(saved)) {
+        localStorage.removeItem('api_base_url');
+      }
       // If the page is served directly from the FastAPI backend on port 8000, use window.location.origin
       if (window.location.origin && window.location.port === '8000') {
         return window.location.origin;
       }
-      // If deployed in production without custom development ports
       // Production: connect GitHub Pages frontend to Render backend
       if (window.location.hostname === 'aliya1000.github.io') {
-        return 'https://ai-customer-backend-sqq8.onrender.com';
+        return PRODUCTION_BACKEND_URL;
       }
       // Development default: static server (port 5500/3000/5173) or file:// -> target FastAPI at port 8000
       return 'http://localhost:8000';
     },
     set BASE_URL(val) {
-      localStorage.setItem('api_base_url', val);
+      const clean = normalizeBaseUrl(val);
+      if (clean) {
+        localStorage.setItem('api_base_url', clean);
+      }
     },
     get USE_MOCK() {
       return false;
